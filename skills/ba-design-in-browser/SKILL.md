@@ -16,7 +16,7 @@ Boards, each in an Excalidraw frame named `BA-NN <title>`:
 4. Component diagram with trust boundaries
 5. ER diagram with versioning/audit fields
 
-Then a functional spec (per page: purpose, data, actions, states loading/empty/error/normal/awaiting-decision) → Stitch screens → "UI reference" board → approval gate → update spec/plan.
+Then a functional spec (per page: purpose, data, actions, states loading/empty/error/normal/awaiting-decision) → Stitch screens (`stitch.md`) → "UI reference" board → approval gate → update spec/plan.
 
 **Per board:** write `docs/ba/NN-*.mmd` → render → export PNG to `docs/ba/` → show user → approval → commit. Maintain `docs/ba/README.md` (index) and `docs/ba/open-questions.md`: a gap in the design doc gets logged and your provisional choice is marked `TBD Qn` on the diagram — never silently invent. Sync approved changes back into the design doc.
 
@@ -29,16 +29,17 @@ Then a functional spec (per page: purpose, data, actions, states loading/empty/e
 | Frame it | Right-click selection → Wrap selection in frame; double-click title to rename |
 | Layout / wrap programmatically | `scripts/excalidraw-helpers.js`: backup → edit localStorage → `blockAppOverwrite()` → reload |
 | Find new elements | "not in backup AND not in any BA frame" — never by position or custom ids |
+| Paste a PNG | `osascript -e 'set the clipboard to (read (POSIX file "<png>") as «class PNGf»)'` → click empty canvas → Cmd+V |
 | Export PNG | `bash scripts/save-clipboard-png.sh --clear` → select frame → Cmd+Shift+E → "Only selected" → "Copy PNG to clipboard" → `bash scripts/save-clipboard-png.sh docs/ba/NN-x.png <frameW> <frameH>` |
 
 ## Canvas safety
 excalidraw.com has ONE local canvas per browser (localStorage `excalidraw`, `excalidraw-state`); a new tab shows the same drawing. If it has content, ask: user backs it up / boards placed far away / collaboration room (data on Excalidraw servers). Before any programmatic edit run `backupCanvas()`; after every change run `verifyUserElementsUnchanged()`.
 
-## Google Stitch (partially validated)
-- First visit: ToS with marketing/research boxes **pre-ticked**. Stop and ask; if authorized, untick both, then Continue.
-- Prompts in the UI's target language, stored in `docs/ba/stitch-prompts/`: `00-global.md` (platform/width, audience, style refs, fonts, status colors, decision-point component, "This will: …" note on external-write buttons, required states) + one file per screen.
-- Prompt box is in an iframe: click, then type ONE paragraph (newlines may submit). Submit with the arrow. ~1–2 min/screen; it builds a design-system board first. Order: shell + main list, then the most novel view.
-- Save to `docs/ba/ui/<page>.png` (export method not yet validated) and place in the UI-reference frame with navigation arrows and state annotations.
+## Google Stitch (verified)
+Full workflow, prompts and export steps: **`stitch.md`**. Essentials:
+- ToS boxes come pre-ticked — stop and ask. Use classic mode ("Switch back") and pick "Web".
+- Prompts in `design/prompts/` (`00-global.md` + one paragraph per screen); always say "Do not show any model name" + the real integration mode, then grep each export for invented details.
+- Export with "Code to Clipboard" (never the default "AI Studio"), `pbpaste` into `design/code/NN-page.html`, render with `scripts/render-stitch-html.sh`. Log local HTML patches in `design/README.md`.
 
 ## Common Mistakes
 | Mistake | Fix |
@@ -51,3 +52,12 @@ excalidraw.com has ONE local canvas per browser (localStorage `excalidraw`, `exc
 | Serving `.mmd` from localhost | Chrome Local Network Access prompt blocks fetch — inline as JSON string |
 | Insert lands off-screen | First scroll after a dialog is often swallowed — screenshot before inserting |
 | Reading clipboard via page JS | Permission-dependent and heavy; use the osascript script |
+| Stitch "design agent" mode, first screen hangs | "Switch back" to classic; choose "Web" |
+| Prompt edited an existing screen | Screen chip was in the input — click empty canvas far from the input first |
+| Stray request running | Suggestion chip clicked — cancel via ⊗ in the history |
+| Browser batch times out while Stitch generates | Keep each batch < ~90 s; poll |
+| Second `.zip` export never arrives | Chrome blocks repeat downloads silently — use "Code to Clipboard" |
+| Clicked "Build with AI Studio" | Default export format sends design to another service — confirm "Code to Clipboard" + "Copy" button |
+| Copied HTML is pre-edit / Stitch fixes wrong element | Clear clipboard first, grep for latest-edit strings; else patch HTML locally + log in `design/README.md` |
+| Invented model names, webhooks, approvers | Prompt "Do not show any model name" + real integration mode; grep exports vs spec |
+| Huge board PNG in repo | Export 1×, `sips -s format jpeg -s formatOptions 80` |

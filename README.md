@@ -10,7 +10,7 @@ Skills are placed in `~/.claude/skills/<skill-name>/SKILL.md` to make them avail
 |---|---|
 | **api-dev** | API development (REST, validation, auth, rate limiting, caching) |
 | **architect** | System architecture, NFRs, monorepo structure, decision frameworks |
-| **ba-design-in-browser** | BA design phase in the browser — Mermaid-sourced Excalidraw boards (flow, state, sequence, component, ER), safe canvas edits, PNG export, Google Stitch screens |
+| **ba-design-in-browser** | BA design phase in the browser — Mermaid-sourced Excalidraw boards (flow, state, sequence, component, ER), safe canvas edits, PNG export, Google Stitch screens (prompting, clipboard export, headless render) |
 | **business-analyst** | Requirements elicitation, user stories, acceptance criteria, process mapping |
 | **product-owner** | PRD authoring, feature review (7 dimensions), iteration cycles |
 | **qa-engineer** | Test strategy, test cases, Playwright E2E, bug reporting, sign-off |
